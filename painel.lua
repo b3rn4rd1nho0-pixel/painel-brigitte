@@ -217,7 +217,7 @@ local function enviarChat(texto)
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
         TextChatService.TextChannels.RBXGeneral:SendAsync(texto)
     else
-        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(texto, "All")
+        game.ReplicatedStorage.DefaultSystemChatEvents.SayMessageRequest:FireServer(texto, "All")
     end
 end
 
@@ -246,14 +246,12 @@ local function numeroParaExtenso(n)
 
     local partes = {}
 
-    -- Centenas
     local c = math.floor(n / 100)
     local resto = n % 100
     if c > 0 then
         table.insert(partes, centenas[c])
     end
 
-    -- Dezenas e unidades
     if resto >= 10 and resto <= 19 then
         table.insert(partes, especiais[resto])
     elseif resto >= 20 then
@@ -333,7 +331,6 @@ local function criarAba(nome, emoji, ordem)
 
     return container
 end
-
 --// CRIAR CARD DE COMANDO
 local function criarCard(parent, cmd, layoutOrder)
     local btn = Instance.new("TextButton")
@@ -591,8 +588,278 @@ btnStart.MouseButton1Click:Connect(function()
 
             local palavra = numeroParaExtenso(i) .. "!"
             enviarChat(palavra)
-            pularPers
-                    icon.MouseButton1Up:Connect(function()
+            pularPersonagem()
+
+            task.wait(1)
+        end
+
+        if contagemToken == meuToken then
+            contagemAtiva = false
+            lblStatus.Text = "✅ Contagem finalizada!"
+            lblStatus.TextColor3 = TEMA.Verde
+        end
+    end)
+end)
+
+btnStop.MouseButton1Click:Connect(function()
+    contagemAtiva = false
+    contagemToken = contagemToken + 1
+    lblStatus.Text = "⏹ Contagem parada."
+    lblStatus.TextColor3 = TEMA.Vermelho
+end)
+
+--==========================================
+--// ABA 3 — ESP
+--==========================================
+local abaESP = criarAba("ESP", "🎯", 3)
+
+criarLabel(abaESP, "🎯 MARCADOR DE JOGADORES", TEMA.Dourado, 1, 22)
+criarLabel(abaESP, "Bolinhas de localização nos players", TEMA.TextoSecundario, 2, 16)
+
+local btnToggleESP = Instance.new("TextButton")
+btnToggleESP.Size = UDim2.new(1, -8, 0, 46)
+btnToggleESP.BackgroundColor3 = TEMA.Verde
+btnToggleESP.Text = "✅ ESP ATIVADO — Clique pra desativar"
+btnToggleESP.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnToggleESP.TextSize = 12
+btnToggleESP.Font = Enum.Font.GothamBold
+btnToggleESP.AutoButtonColor = false
+btnToggleESP.LayoutOrder = 3
+btnToggleESP.Parent = abaESP
+
+local btnESPCorner = Instance.new("UICorner")
+btnESPCorner.CornerRadius = UDim.new(0, 8)
+btnESPCorner.Parent = btnToggleESP
+
+criarLabel(abaESP, "Bolinhas verdes aparecem acima de cada jogador.", TEMA.TextoSecundario, 4, 16)
+criarLabel(abaESP, "Você não vê bolinha no seu próprio personagem.", TEMA.TextoSecundario, 5, 16)
+
+local espFolder = Instance.new("Folder")
+espFolder.Name = "BrigitteESP"
+espFolder.Parent = gui
+
+local bolinhas = {}
+local espAtivo = true
+
+local function criarBolinha(plr)
+    if plr == player then return end
+    if not espAtivo then return end
+
+    local function anexar(character)
+        local hrp = character:WaitForChild("HumanoidRootPart", 5)
+        if not hrp then return end
+        if not espAtivo then return end
+
+        if bolinhas[plr] and bolinhas[plr].Parent then
+            bolinhas[plr]:Destroy()
+        end
+
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "BrigitteMarker"
+        billboard.Size = UDim2.new(0, 14, 0, 14)
+        billboard.AlwaysOnTop = true
+        billboard.LightInfluence = 0
+        billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+        billboard.Adornee = hrp
+        billboard.Parent = espFolder
+
+        local dot = Instance.new("Frame")
+        dot.Size = UDim2.new(1, 0, 1, 0)
+        dot.BackgroundColor3 = Color3.fromRGB(0, 255, 80)
+        dot.BorderSizePixel = 0
+        dot.Parent = billboard
+
+        local dotCorner = Instance.new("UICorner")
+        dotCorner.CornerRadius = UDim.new(1, 0)
+        dotCorner.Parent = dot
+
+        local dotStroke = Instance.new("UIStroke")
+        dotStroke.Color = Color3.fromRGB(0, 0, 0)
+        dotStroke.Thickness = 1.5
+        dotStroke.Parent = dot
+
+        bolinhas[plr] = billboard
+    end
+
+    if plr.Character then anexar(plr.Character) end
+    plr.CharacterAdded:Connect(function(char)
+        if espAtivo then anexar(char) end
+    end)
+end
+
+local function removerTodasBolinhas()
+    for plr, bb in pairs(bolinhas) do
+        if bb and bb.Parent then bb:Destroy() end
+        bolinhas[plr] = nil
+    end
+end
+
+local function ativarESPTodos()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        criarBolinha(plr)
+    end
+end
+
+ativarESPTodos()
+Players.PlayerAdded:Connect(function(plr)
+    if espAtivo then criarBolinha(plr) end
+end)
+Players.PlayerRemoving:Connect(function(plr)
+    if bolinhas[plr] and bolinhas[plr].Parent then
+        bolinhas[plr]:Destroy()
+    end
+    bolinhas[plr] = nil
+end)
+
+btnToggleESP.MouseButton1Click:Connect(function()
+    espAtivo = not espAtivo
+
+    if espAtivo then
+        ativarESPTodos()
+        btnToggleESP.Text = "✅ ESP ATIVADO — Clique pra desativar"
+        btnToggleESP.BackgroundColor3 = TEMA.Verde
+    else
+        removerTodasBolinhas()
+        btnToggleESP.Text = "❌ ESP DESATIVADO — Clique pra ativar"
+        btnToggleESP.BackgroundColor3 = TEMA.Vermelho
+    end
+end)
+
+--==========================================
+--// AJUSTE AUTOMÁTICO DE TAMANHO
+--==========================================
+function atualizarTamanho()
+    local abaAtual = nil
+    for _, dados in pairs(abas) do
+        if dados.container.Visible then
+            abaAtual = dados.container
+            break
+        end
+    end
+    if not abaAtual then return end
+
+    local alturaConteudo = abaAtual.UIListLayout.AbsoluteContentSize.Y + 12
+    abaAtual.CanvasSize = UDim2.new(0, 0, 0, alturaConteudo)
+
+    local alturaVisivel = math.min(alturaConteudo, 380)
+    contentFrame.Size = UDim2.new(1, -16, 0, alturaVisivel)
+    panel.Size = UDim2.new(0, 280, 0, 88 + alturaVisivel + 8)
+end
+
+for _, dados in pairs(abas) do
+    dados.layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(atualizarTamanho)
+end
+
+abas["COMANDOS"].container.Visible = true
+TweenService:Create(abas["COMANDOS"].botao, TweenInfo.new(0.1), {
+    BackgroundColor3 = TEMA.Dourado,
+    TextColor3 = Color3.fromRGB(20, 20, 20)
+}):Play()
+atualizarTamanho()
+
+--==========================================
+--// ARRASTAR
+--==========================================
+local function tornarArrastavel(frame, handle)
+    local arrastando = false
+    local inicioMouse, inicioPos
+
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+            arrastando = true
+            inicioMouse = input.Position
+            inicioPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    arrastando = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if arrastando and (input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - inicioMouse
+            frame.Position = UDim2.new(
+                inicioPos.X.Scale, inicioPos.X.Offset + delta.X,
+                inicioPos.Y.Scale, inicioPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+tornarArrastavel(panel, header)
+tornarArrastavel(icon, icon)
+
+--==========================================
+--// ABRIR / FECHAR
+--==========================================
+local aberto = false
+local animando = false
+
+local function abrirFechar()
+    if animando then return end
+    animando = true
+
+    if not aberto then
+        atualizarTamanho()
+        local alturaFinal = panel.Size.Y.Offset
+
+        panel.Position = UDim2.new(
+            0, icon.Position.X.Offset + 74,
+            0, icon.Position.Y.Offset
+        )
+
+        panel.Visible = true
+        panel.Size = UDim2.new(0, 280, 0, 0)
+        TweenService:Create(panel, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 280, 0, alturaFinal)
+        }):Play()
+        aberto = true
+    else
+        local tween = TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 280, 0, 0)
+        })
+        tween:Play()
+        tween.Completed:Connect(function() panel.Visible = false end)
+        aberto = false
+    end
+
+    task.wait(0.3)
+    animando = false
+end
+
+icon.MouseButton1Click:Connect(abrirFechar)
+closeBtn.MouseButton1Click:Connect(abrirFechar)
+
+--==========================================
+--// AUTO-DESTRUIÇÃO (segurar ícone 3s)
+--==========================================
+local tempoApertado = 0
+local segurando = false
+local jaDestruido = false
+
+local function autoDestruir()
+    if jaDestruido then return end
+    jaDestruido = true
+
+    contagemAtiva = false
+    contagemToken = contagemToken + 1
+    removerTodasBolinhas()
+
+    if gui and gui.Parent then
+        gui:Destroy()
+    end
+end
+
+icon.MouseButton1Down:Connect(function()
+    segurando = true
+    tempoApertado = tick()
+end)
+
+icon.MouseButton1Up:Connect(function()
     if segurando then
         segurando = false
         local duracao = tick() - tempoApertado
