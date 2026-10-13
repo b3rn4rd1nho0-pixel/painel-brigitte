@@ -204,7 +204,7 @@ tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 tabsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 tabsLayout.Parent = tabsBar
 
---// CONTAINER DE CONTEÚDO (troca entre abas)
+--// CONTAINER DE CONTEÚDO
 local contentFrame = Instance.new("Frame")
 contentFrame.Name = "Content"
 contentFrame.Size = UDim2.new(1, -16, 0, 0)
@@ -221,32 +221,60 @@ local function enviarChat(texto)
     end
 end
 
---// CONVERSOR NÚMERO → EXTENSO (1 a 100)
-local extenso = {
+--// CONVERSOR NÚMERO → EXTENSO (1 a 1000)
+local unidades = {
     [1]="UM", [2]="DOIS", [3]="TRÊS", [4]="QUATRO", [5]="CINCO",
-    [6]="SEIS", [7]="SETE", [8]="OITO", [9]="NOVE", [10]="DEZ",
-    [11]="ONZE", [12]="DOZE", [13]="TREZE", [14]="CATORZE", [15]="QUINZE",
-    [16]="DEZESSEIS", [17]="DEZESSETE", [18]="DEZOITO", [19]="DEZENOVE", [20]="VINTE",
-    [30]="TRINTA", [40]="QUARENTA", [50]="CINQUENTA",
-    [60]="SESSENTA", [70]="SETENTA", [80]="OITENTA", [90]="NOVENTA", [100]="CEM"
+    [6]="SEIS", [7]="SETE", [8]="OITO", [9]="NOVE"
+}
+local especiais = {
+    [10]="DEZ", [11]="ONZE", [12]="DOZE", [13]="TREZE", [14]="CATORZE",
+    [15]="QUINZE", [16]="DEZESSEIS", [17]="DEZESSETE", [18]="DEZOITO", [19]="DEZENOVE"
+}
+local dezenas = {
+    [2]="VINTE", [3]="TRINTA", [4]="QUARENTA", [5]="CINQUENTA",
+    [6]="SESSENTA", [7]="SETENTA", [8]="OITENTA", [9]="NOVENTA"
+}
+local centenas = {
+    [1]="CENTO", [2]="DUZENTOS", [3]="TREZENTOS", [4]="QUATROCENTOS",
+    [5]="QUINHENTOS", [6]="SEISCENTOS", [7]="SETECENTOS", [8]="OITOCENTOS", [9]="NOVECENTOS"
 }
 
 local function numeroParaExtenso(n)
-    if extenso[n] then return extenso[n] end
-    if n < 100 then
-        local dezena = math.floor(n/10)*10
-        local unidade = n - dezena
-        return extenso[dezena] .. " E " .. extenso[unidade]
+    if n < 1 or n > 1000 then return tostring(n) end
+    if n == 100 then return "CEM" end
+    if n == 1000 then return "MIL" end
+
+    local partes = {}
+
+    -- Centenas
+    local c = math.floor(n / 100)
+    local resto = n % 100
+    if c > 0 then
+        table.insert(partes, centenas[c])
     end
-    return tostring(n)
+
+    -- Dezenas e unidades
+    if resto >= 10 and resto <= 19 then
+        table.insert(partes, especiais[resto])
+    elseif resto >= 20 then
+        local d = math.floor(resto / 10)
+        local u = resto % 10
+        if u > 0 then
+            table.insert(partes, dezenas[d] .. " E " .. unidades[u])
+        else
+            table.insert(partes, dezenas[d])
+        end
+    elseif resto >= 1 and resto <= 9 then
+        table.insert(partes, unidades[resto])
+    end
+
+    return table.concat(partes, " E ")
 end
 
---// CRIAR ABA (botão de menu)
+--// CRIAR ABA
 local abas = {}
-local abasContainer = {}
 
 local function criarAba(nome, emoji, ordem)
-    -- Botão da aba
     local tabBtn = Instance.new("TextButton")
     tabBtn.Name = "Tab_" .. nome
     tabBtn.Size = UDim2.new(0, 82, 1, -6)
@@ -263,7 +291,6 @@ local function criarAba(nome, emoji, ordem)
     tabCorner.CornerRadius = UDim.new(0, 5)
     tabCorner.Parent = tabBtn
 
-    -- Container de conteúdo
     local container = Instance.new("ScrollingFrame")
     container.Name = "Container_" .. nome
     container.Size = UDim2.new(1, 0, 1, 0)
@@ -287,9 +314,7 @@ local function criarAba(nome, emoji, ordem)
     padding.Parent = container
 
     abas[nome] = { botao = tabBtn, container = container, layout = layout }
-    abasContainer[nome] = container
 
-    -- Clique pra trocar aba
     tabBtn.MouseButton1Click:Connect(function()
         for _, dados in pairs(abas) do
             dados.container.Visible = false
@@ -309,7 +334,7 @@ local function criarAba(nome, emoji, ordem)
     return container
 end
 
---// CRIAR BOTÃO DE COMANDO (card)
+--// CRIAR CARD DE COMANDO
 local function criarCard(parent, cmd, layoutOrder)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -8, 0, 44)
@@ -389,13 +414,13 @@ local function criarCard(parent, cmd, layoutOrder)
         task.delay(0.15, function()
             TweenService:Create(btn, TweenInfo.new(0.2), { BackgroundColor3 = TEMA.FundoBotao }):Play()
         end)
-        enviarChat(cmd.mensagem or (cmd.emoji .. " // " .. cmd.texto:upper() .. " " .. cmd.emoji .. " | " .. cmd.desc))
+        enviarChat(cmd.emoji .. " // " .. cmd.texto:upper() .. " " .. cmd.emoji .. " | " .. cmd.desc)
     end)
 
     return btn
 end
 
---// CRIAR INPUT (caixa de texto)
+--// CRIAR INPUT
 local function criarInput(parent, placeholder, ordem)
     local box = Instance.new("Frame")
     box.Size = UDim2.new(1, -8, 0, 38)
@@ -482,12 +507,11 @@ end
 local abaJJ = criarAba("JJ's", "🏋️", 2)
 
 criarLabel(abaJJ, "🏋️ SISTEMA DE JJ's", TEMA.Dourado, 1, 22)
-criarLabel(abaJJ, "Digite o número inicial e final", TEMA.TextoSecundario, 2, 16)
+criarLabel(abaJJ, "Digite o número inicial e final (1 a 1000)", TEMA.TextoSecundario, 2, 16)
 
 local inputInicio = criarInput(abaJJ, "De (ex: 1)", 3)
-local inputFim    = criarInput(abaJJ, "Até (ex: 10)", 4)
+local inputFim    = criarInput(abaJJ, "Até (ex: 50)", 4)
 
--- Botão START
 local btnStart = Instance.new("TextButton")
 btnStart.Size = UDim2.new(1, -8, 0, 42)
 btnStart.BackgroundColor3 = TEMA.Verde
@@ -503,7 +527,6 @@ local btnStartCorner = Instance.new("UICorner")
 btnStartCorner.CornerRadius = UDim.new(0, 8)
 btnStartCorner.Parent = btnStart
 
--- Botão STOP
 local btnStop = Instance.new("TextButton")
 btnStop.Size = UDim2.new(1, -8, 0, 36)
 btnStop.BackgroundColor3 = TEMA.Vermelho
@@ -519,10 +542,8 @@ local btnStopCorner = Instance.new("UICorner")
 btnStopCorner.CornerRadius = UDim.new(0, 8)
 btnStopCorner.Parent = btnStop
 
--- Label de status
 local lblStatus = criarLabel(abaJJ, "Status: aguardando...", TEMA.TextoSecundario, 7, 16)
 
--- Controle da contagem
 local contagemAtiva = false
 local contagemToken = 0
 
@@ -549,8 +570,8 @@ btnStart.MouseButton1Click:Connect(function()
         lblStatus.TextColor3 = TEMA.Vermelho
         return
     end
-    if n1 < 1 or n2 > 100 then
-        lblStatus.Text = "❌ Use números de 1 a 100!"
+    if n1 < 1 or n2 > 1000 then
+        lblStatus.Text = "❌ Use números de 1 a 1000!"
         lblStatus.TextColor3 = TEMA.Vermelho
         return
     end
@@ -570,25 +591,4 @@ btnStart.MouseButton1Click:Connect(function()
 
             local palavra = numeroParaExtenso(i) .. "!"
             enviarChat(palavra)
-            pularPersonagem()
-
-            task.wait(1)
-        end
-
-        if contagemToken == meuToken then
-            contagemAtiva = false
-            lblStatus.Text = "✅ Contagem finalizada!"
-            lblStatus.TextColor3 = TEMA.Verde
-        end
-    end)
-end)
-
-btnStop.MouseButton1Click:Connect(function()
-    contagemAtiva = false
-    contagemToken = contagemToken + 1
-    lblStatus.Text = "⏹ Contagem parada."
-    lblStatus.TextColor3 = TEMA.Vermelho
-end)
-
---==========================================
---// ABA
+            pularPers
