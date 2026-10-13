@@ -217,7 +217,7 @@ local function enviarChat(texto)
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
         TextChatService.TextChannels.RBXGeneral:SendAsync(texto)
     else
-        game.ReplicatedStorage.DefaultSystemChatEvents.SayMessageRequest:FireServer(texto, "All")
+        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(texto, "All")
     end
 end
 
@@ -550,6 +550,9 @@ local function pularPersonagem()
     local hum = char:FindFirstChildOfClass("Humanoid")
     if not hum then return end
     if hum:GetState() == Enum.HumanoidStateType.Seated then return end
+    if hum:GetState() == Enum.HumanoidStateType.Dead then return end
+
+    hum:ChangeState(Enum.HumanoidStateType.Jumping)
     hum.Jump = true
 end
 
@@ -590,7 +593,7 @@ btnStart.MouseButton1Click:Connect(function()
             enviarChat(palavra)
             pularPersonagem()
 
-            task.wait(1)
+            task.wait(2)
         end
 
         if contagemToken == meuToken then
