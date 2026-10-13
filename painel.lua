@@ -592,3 +592,12 @@ btnStart.MouseButton1Click:Connect(function()
             local palavra = numeroParaExtenso(i) .. "!"
             enviarChat(palavra)
             pularPers
+                    icon.MouseButton1Up:Connect(function()
+    if segurando then
+        segurando = false
+        local duracao = tick() - tempoApertado
+        if duracao >= 3 then
+            autoDestruir()
+        end
+    end
+end)
