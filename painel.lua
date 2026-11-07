@@ -76,7 +76,7 @@ txtBot.TextColor3 = Color3.fromRGB(0, 0, 0)
 txtBot.TextSize = 6
 txtBot.Font = Enum.Font.GothamBold
 
---// PAINEL (Aumentei um pouco a largura pra caber as abas)
+--// PAINEL
 local panel = Instance.new("Frame")
 panel.Size = UDim2.new(0, 220, 0, 0)
 panel.Position = UDim2.new(0, 20, 0, 150)
@@ -125,14 +125,16 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS (Aumentado e com Scroll Horizontal)
+--// MENU DE ABAS (Agora com rolagem horizontal arrastável)
 local tabsBar = Instance.new("ScrollingFrame", panel)
-tabsBar.Size = UDim2.new(1, -10, 0, 32) -- Mais alto
+tabsBar.Size = UDim2.new(1, -10, 0, 32)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
 tabsBar.BackgroundTransparency = 1
 tabsBar.BorderSizePixel = 0
-tabsBar.ScrollBarThickness = 0
-tabsBar.ScrollingDirection = Enum.ScrollingDirection.X -- Permite rolar pro lado se faltar espaço
+tabsBar.ScrollBarThickness = 2
+tabsBar.ScrollBarImageColor3 = TEMA.Verde
+tabsBar.ScrollingDirection = Enum.ScrollingDirection.X -- Rola pro lado!
+tabsBar.ElasticBehavior = Enum.ElasticBehavior.Never
 
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -140,7 +142,7 @@ tabsLayout.Padding = UDim.new(0, 4)
 
 local contentFrame = Instance.new("Frame", panel)
 contentFrame.Size = UDim2.new(1, -10, 0, 0)
-contentFrame.Position = UDim2.new(0, 5, 0, 74) -- Desceu um pouco
+contentFrame.Position = UDim2.new(0, 5, 0, 74)
 contentFrame.BackgroundTransparency = 1
 
 --// CHAT
@@ -156,11 +158,11 @@ end
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
-    btn.Size = UDim2.new(0, 75, 1, 0) -- Botão de aba maior
+    btn.Size = UDim2.new(0, 70, 1, 0)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 10
+    btn.TextSize = 9
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
@@ -174,11 +176,9 @@ local function criarAba(nome, ordem)
     scroll.ScrollBarImageColor3 = TEMA.Azul
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     scroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    scroll.ClipsDescendants = true
-    scroll.Visible = false
-    -- ISSO AQUI CONSERTA A ROLAGEM DE BUGAR
     scroll.ScrollingEnabled = true 
     scroll.ElasticBehavior = Enum.ElasticBehavior.Never 
+    scroll.Visible = false
 
     local list = Instance.new("UIListLayout", scroll)
     list.Padding = UDim.new(0, 4)
@@ -326,7 +326,7 @@ for i, q in ipairs(qcodes) do
     end)
 end
 
---// ABA 4 — JJ's (CORRIGIDO: 0.7s E PULO NORMAL)
+--// ABA 4 — JJ's (0.7s, Pulo Natural)
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -364,7 +364,6 @@ criarBotao(abaJJ, "INICIAR", "0.7s por msg", TEMA.Verde, function()
             
             enviarChat(numExt(i) .. "!")
             
-            -- Pulo natural (só pula se estiver no chão)
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
             if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated and hum:GetState() ~= Enum.HumanoidStateType.Dead then
@@ -373,7 +372,7 @@ criarBotao(abaJJ, "INICIAR", "0.7s por msg", TEMA.Verde, function()
                 end
             end
             
-            task.wait(0.7) -- Tempo alterado para 0.7
+            task.wait(0.7)
         end
     end)
 end)
