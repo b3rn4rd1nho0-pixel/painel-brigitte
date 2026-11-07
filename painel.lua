@@ -125,7 +125,7 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS
+--// MENU DE ABAS (Ajustado para 5 abas)
 local tabsBar = Instance.new("Frame", panel)
 tabsBar.Size = UDim2.new(1, -10, 0, 26)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
@@ -133,7 +133,7 @@ tabsBar.BackgroundTransparency = 1
 
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
-tabsLayout.Padding = UDim.new(0, 3)
+tabsLayout.Padding = UDim.new(0, 2)
 tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local contentFrame = Instance.new("Frame", panel)
@@ -154,11 +154,11 @@ end
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
-    btn.Size = UDim2.new(0, 49, 1, 0)
+    btn.Size = UDim2.new(0, 39, 1, 0)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 8
+    btn.TextSize = 7
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
@@ -279,7 +279,7 @@ local veiculos = {
 }
 for _, v in ipairs(veiculos) do criarBotao(abaVeic, v[1], v[2], v[3], v[4]) end
 
---// ABA 3 — RÁDIO E CÓDIGOS Q
+--// ABA 3 — RÁDIO
 local abaRadio = criarAba("RÁDIO", 3)
 local boxRadio = Instance.new("Frame", abaRadio)
 boxRadio.Size = UDim2.new(1, 0, 0, 45)
@@ -314,7 +314,6 @@ criarBotao(abaRadio, "ENVIAR RÁDIO", "Manda /r: [Q] [Msg]", TEMA.Verde, functio
     end
 end)
 
--- SISTEMA DE MENU SUSPENSO (DROPDOWN)
 local listaAberta = false
 local btnDropdown = criarBotao(abaRadio, "SELECIONAR CÓDIGO Q ▼", "Clique para ver a lista", TEMA.Azul, function()
     listaAberta = not listaAberta
@@ -336,7 +335,6 @@ local layoutLista = Instance.new("UIListLayout", scrollLista)
 layoutLista.Padding = UDim.new(0, 2)
 layoutLista.SortOrder = Enum.SortOrder.LayoutOrder
 
--- LISTA COMPLETA COM FRASES EXPLICATIVAS
 local qcodes = {
     {"QAP", "Aguardando ordens. 'Na escuta, aguardando instruções'."},
     {"QRV", "Estou pronto. 'Rádio pronto para transmitir, pode falar'."},
@@ -460,7 +458,60 @@ criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     token = token + 1
 end)
 
---// AJUSTE DE TAMANHO E ROLAGEM
+--// ABA 5 — ESP (LIGAR/DESLIGAR)
+local abaESP = criarAba("ESP", 5)
+local espAtivo = true
+local espFolder = Instance.new("Folder", gui)
+
+local function atualizarBolinhas()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character and plr.Character:FindFirstChild("Head") then
+            if espAtivo then
+                if not espFolder:FindFirstChild(plr.Name) then
+                    local bb = Instance.new("BillboardGui", espFolder)
+                    bb.Name = plr.Name
+                    bb.Size = UDim2.new(0, 10, 0, 10)
+                    bb.AlwaysOnTop = true
+                    bb.Adornee = plr.Character.Head
+                    bb.StudsOffset = Vector3.new(0, 1.5, 0)
+                    
+                    local dt = Instance.new("Frame", bb)
+                    dt.Size = UDim2.new(1, 0, 1, 0)
+                    dt.BackgroundColor3 = TEMA.Verde
+                    Instance.new("UICorner", dt).CornerRadius = UDim.new(1, 0)
+                end
+            else
+                local bolinha = espFolder:FindFirstChild(plr.Name)
+                if bolinha then bolinha:Destroy() end
+            end
+        end
+    end
+end
+
+local btnEsp = criarBotao(abaESP, "ESP: ATIVADO", "Clique para desativar as bolinhas", TEMA.Verde, function()
+    espAtivo = not espAtivo
+    if espAtivo then
+        btnEsp.TextLabel.Text = "ESP: ATIVADO"
+        btnEsp.TextLabel.TextColor3 = TEMA.Verde
+    else
+        btnEsp.TextLabel.Text = "ESP: DESATIVADO"
+        btnEsp.TextLabel.TextColor3 = TEMA.Vermelho
+        for _, b in pairs(espFolder:GetChildren()) do b:Destroy() end
+    end
+    atualizarBolinhas()
+end)
+
+task.spawn(function()
+    while gui.Parent do
+        if espAtivo then atualizarBolinhas() end
+        task.wait(2)
+    end
+end)
+
+--// COMPATIBILIDADE COM AS ABAS
+abas["ESP"] = { btn = abaESP.Parent, scroll = abaESP, list = abaESP.UIListLayout }
+
+--// AJUSTE DE TAMANHO E ROLAGEM FINAL
 function atualizarTamanho()
     local abaAtual
     for _, a in pairs(abas) do if a.scroll.Visible then abaAtual = a.scroll break end end
@@ -496,6 +547,7 @@ end
 arrastar(panel, header)
 arrastar(icon, icon)
 
+--// ABRIR E FECHAR
 local open, anim = false, false
 local function togglePanel()
     if anim then return end; anim = true
@@ -518,6 +570,7 @@ end
 icon.MouseButton1Click:Connect(togglePanel)
 closeBtn.MouseButton1Click:Connect(togglePanel)
 
+--// AUTO-DESTRUIÇÃO
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
 icon.MouseButton1Up:Connect(function()
