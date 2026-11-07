@@ -130,6 +130,7 @@ local tabsBar = Instance.new("Frame", panel)
 tabsBar.Size = UDim2.new(1, -10, 0, 26)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
 tabsBar.BackgroundTransparency = 1
+tabsBar.ZIndex = 2
 
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
