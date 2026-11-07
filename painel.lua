@@ -20,27 +20,61 @@ local TEMA = {
 
 --// GUI BASE
 local gui = Instance.new("ScreenGui")
-gui.Name = "PainelTatico"
+gui.Name = "PainelGulosos"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// ÍCONE
+--// ÍCONE (ESCUDO GULOSOS FC)
 local icon = Instance.new("TextButton")
-icon.Size = UDim2.new(0, 40, 0, 40)
+icon.Size = UDim2.new(0, 45, 0, 45)
 icon.Position = UDim2.new(0, 20, 0, 100)
-icon.BackgroundColor3 = TEMA.Painel
-icon.Text = ">"
-icon.TextColor3 = TEMA.Azul
-icon.TextSize = 18
-icon.Font = Enum.Font.GothamBold
+icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+icon.Text = ""
 icon.Parent = gui
 icon.AutoButtonColor = false
-Instance.new("UICorner", icon).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", icon).CornerRadius = UDim.new(1, 0)
+
 local iconStroke = Instance.new("UIStroke", icon)
-iconStroke.Color = TEMA.Azul
-iconStroke.Thickness = 2
+iconStroke.Color = Color3.fromRGB(0, 0, 0)
+iconStroke.Thickness = 3
+
+local star = Instance.new("TextLabel", icon)
+star.Size = UDim2.new(1, 0, 0, 15)
+star.Position = UDim2.new(0, 0, 0, -8)
+star.BackgroundTransparency = 1
+star.Text = "★"
+star.TextColor3 = Color3.fromRGB(255, 200, 0)
+star.TextSize = 16
+star.Font = Enum.Font.GothamBold
+star.ZIndex = 2
+
+local txtTop = Instance.new("TextLabel", icon)
+txtTop.Size = UDim2.new(1, 0, 0, 10)
+txtTop.Position = UDim2.new(0, 0, 0, 8)
+txtTop.BackgroundTransparency = 1
+txtTop.Text = "GULOSOS"
+txtTop.TextColor3 = Color3.fromRGB(0, 0, 0)
+txtTop.TextSize = 7
+txtTop.Font = Enum.Font.GothamBold
+
+local txtMid = Instance.new("TextLabel", icon)
+txtMid.Size = UDim2.new(1, 0, 1, 0)
+txtMid.BackgroundTransparency = 1
+txtMid.Text = "GFC"
+txtMid.TextColor3 = Color3.fromRGB(0, 150, 50)
+txtMid.TextSize = 16
+txtMid.Font = Enum.Font.GothamBlack
+
+local txtBot = Instance.new("TextLabel", icon)
+txtBot.Size = UDim2.new(1, 0, 0, 10)
+txtBot.Position = UDim2.new(0, 0, 1, -15)
+txtBot.BackgroundTransparency = 1
+txtBot.Text = "FUTEBOL CLUBE"
+txtBot.TextColor3 = Color3.fromRGB(0, 0, 0)
+txtBot.TextSize = 6
+txtBot.Font = Enum.Font.GothamBold
 
 --// PAINEL
 local panel = Instance.new("Frame")
@@ -60,7 +94,7 @@ local header = Instance.new("Frame", panel)
 header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = TEMA.Card
 Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
-local headerFix = Instance.new("Frame", header) -- Pra tampar o arredondamento embaixo
+local headerFix = Instance.new("Frame", header)
 headerFix.Size = UDim2.new(1, 0, 0, 10)
 headerFix.Position = UDim2.new(0, 0, 1, -10)
 headerFix.BackgroundColor3 = TEMA.Card
@@ -68,16 +102,16 @@ headerFix.BorderSizePixel = 0
 local headerLine = Instance.new("Frame", header)
 headerLine.Size = UDim2.new(1, 0, 0, 2)
 headerLine.Position = UDim2.new(0, 0, 1, -2)
-headerLine.BackgroundColor3 = TEMA.Azul
+headerLine.BackgroundColor3 = TEMA.Verde
 headerLine.BorderSizePixel = 0
 
 local title = Instance.new("TextLabel", header)
 title.Size = UDim2.new(1, -40, 1, 0)
 title.Position = UDim2.new(0, 10, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "COMANDO TÁTICO"
-title.TextColor3 = TEMA.Azul
-title.TextSize = 10
+title.Text = "GULOSOS FUTEBOL CLUBE"
+title.TextColor3 = Color3.fromRGB(0, 200, 80)
+title.TextSize = 9
 title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -114,7 +148,7 @@ local function enviarChat(msg)
     end
 end
 
---// SISTEMA DE ABAS
+--// SISTEMA DE ABAS (Rolagem Corrigida)
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
@@ -134,10 +168,14 @@ local function criarAba(nome, ordem)
     scroll.BorderSizePixel = 0
     scroll.ScrollBarThickness = 3
     scroll.ScrollBarImageColor3 = TEMA.Azul
+    scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    scroll.ClipsDescendants = true
     scroll.Visible = false
 
     local list = Instance.new("UIListLayout", scroll)
     list.Padding = UDim.new(0, 4)
+    list.SortOrder = Enum.SortOrder.LayoutOrder
 
     abas[nome] = { btn = btn, scroll = scroll, list = list }
 
@@ -147,12 +185,11 @@ local function criarAba(nome, ordem)
             TweenService:Create(a.btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Card, TextColor3 = TEMA.TextoSub }):Play()
         end
         scroll.Visible = true
-        TweenService:Create(btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Azul, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Verde, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
         atualizarTamanho()
     end)
     return scroll
 end
-
 --// CONVERSOR JJ's
 local un = {[1]="UM",[2]="DOIS",[3]="TRÊS",[4]="QUATRO",[5]="CINCO",[6]="SEIS",[7]="SETE",[8]="OITO",[9]="NOVE"}
 local esp = {[10]="DEZ",[11]="ONZE",[12]="DOZE",[13]="TREZE",[14]="CATORZE",[15]="QUINZE",[16]="DEZESSEIS",[17]="DEZESSETE",[18]="DEZOITO",[19]="DEZENOVE"}
@@ -167,6 +204,7 @@ local function numExt(n)
     elseif r>=1 then table.insert(p, un[r]) end
     return table.concat(p, " E ")
 end
+
 --// GERADOR DE BOTÕES
 local function criarBotao(parent, texto, desc, cor, acao)
     local btn = Instance.new("TextButton", parent)
@@ -238,9 +276,8 @@ local veiculos = {
 }
 for _, v in ipairs(veiculos) do criarBotao(abaVeic, v[1], v[2], v[3], v[4]) end
 
---// ABA 3 — RÁDIO E CÓDIGOS Q
+--// ABA 3 — RÁDIO
 local abaRadio = criarAba("RÁDIO", 3)
-
 local boxRadio = Instance.new("Frame", abaRadio)
 boxRadio.Size = UDim2.new(1, 0, 0, 45)
 boxRadio.BackgroundColor3 = TEMA.Fundo
@@ -251,7 +288,7 @@ local inputQ = Instance.new("TextBox", boxRadio)
 inputQ.Size = UDim2.new(1, -10, 0, 20)
 inputQ.Position = UDim2.new(0, 5, 0, 2)
 inputQ.BackgroundTransparency = 1
-inputQ.PlaceholderText = "Código Q (ex: QRR)"
+inputQ.PlaceholderText = "Código Q"
 inputQ.TextColor3 = TEMA.Texto
 inputQ.TextSize = 9
 inputQ.Font = Enum.Font.GothamBold
@@ -266,7 +303,6 @@ inputMsg.TextColor3 = TEMA.Texto
 inputMsg.TextSize = 9
 inputMsg.Parent = boxRadio
 
--- BOTÃO DE ENVIAR RÁDIO
 criarBotao(abaRadio, "ENVIAR RÁDIO", "Manda /r: [Q] [Msg]", TEMA.Verde, function()
     local q = inputQ.Text
     local m = inputMsg.Text
@@ -275,18 +311,15 @@ criarBotao(abaRadio, "ENVIAR RÁDIO", "Manda /r: [Q] [Msg]", TEMA.Verde, functio
     end
 end)
 
-local qcodes = {
-    "QRR - Rádio", "QTA - Táxi", "QTI - Tático", "QTH - Localização", 
-    "QSL - Entendido", "QAP - Na escuta", "QSJ - Dinheiro", "QSM - Repetir"
-}
+local qcodes = {"QRR", "QTA", "QTI", "QTH", "QSL", "QAP", "QSJ", "QSM"}
 for i, q in ipairs(qcodes) do
-    criarBotao(abaRadio, q, "Clique para selecionar", TEMA.Card, function()
-        inputQ.Text = string.sub(q, 1, 3)
+    criarBotao(abaRadio, q, "Clique p/ preencher", TEMA.Card, function()
+        inputQ.Text = q
         inputMsg:CaptureFocus()
     end)
 end
 
---// ABA 4 — JJ's (CORRIGIDO)
+--// ABA 4 — JJ's (Rápido 0.5s)
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -312,7 +345,7 @@ inputFim.TextSize = 9
 inputFim.Parent = boxJJ
 
 local contando, token = false, 0
-criarBotao(abaJJ, "INICIAR CONTAGEM", "5 segundos por msg", TEMA.Verde, function()
+criarBotao(abaJJ, "INICIAR", "0.5s por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
     contando = true
@@ -326,7 +359,7 @@ criarBotao(abaJJ, "INICIAR CONTAGEM", "5 segundos por msg", TEMA.Verde, function
             if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated then
                 hum:ChangeState(Enum.HumanoidStateType.Jumping)
             end
-            task.wait(5)
+            task.wait(0.5)
         end
     end)
 end)
@@ -335,21 +368,24 @@ criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     token = token + 1
 end)
 
---// SISTEMA DE ABERTURA E ARRASTAR
+--// AJUSTE DE TAMANHO E ROLAGEM
 function atualizarTamanho()
     local abaAtual
     for _, a in pairs(abas) do if a.scroll.Visible then abaAtual = a.scroll break end end
     if not abaAtual then return end
-    local h = math.min(abaAtual.UIListLayout.AbsoluteContentSize.Y + 5, 250)
+    local h = abaAtual.UIListLayout.AbsoluteContentSize.Y + 5
     abaAtual.CanvasSize = UDim2.new(0, 0, 0, h)
-    contentFrame.Size = UDim2.new(1, -10, 0, h)
-    panel.Size = UDim2.new(0, 200, 0, 64 + h + 5)
+    local alturaVisivel = math.min(h, 280)
+    contentFrame.Size = UDim2.new(1, -10, 0, alturaVisivel)
+    panel.Size = UDim2.new(0, 200, 0, 64 + alturaVisivel + 5)
 end
+
 for _, a in pairs(abas) do a.list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(atualizarTamanho) end
 abas["AÇÕES"].scroll.Visible = true
-TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Azul, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
+TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Verde, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
 atualizarTamanho()
 
+--// ARRASTAR E ABRIR
 local function arrastar(f, h)
     local on, start, pos = false, nil, nil
     h.InputBegan:Connect(function(i)
@@ -373,10 +409,11 @@ local function togglePanel()
     if anim then return end; anim = true
     if not open then
         atualizarTamanho()
-        panel.Position = UDim2.new(0, icon.Position.X.Offset + 50, 0, icon.Position.Y.Offset)
+        local finalSize = panel.Size
+        panel.Position = UDim2.new(0, icon.Position.X.Offset + 55, 0, icon.Position.Y.Offset)
         panel.Visible = true
         panel.Size = UDim2.new(0, 200, 0, 0)
-        TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 200, 0, 64 + contentFrame.Size.Y.Offset + 5)}):Play()
+        TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = finalSize}):Play()
         open = true
     else
         local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 200, 0, 0)})
@@ -389,6 +426,7 @@ end
 icon.MouseButton1Click:Connect(togglePanel)
 closeBtn.MouseButton1Click:Connect(togglePanel)
 
+--// AUTO-DESTRUIÇÃO
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
 icon.MouseButton1Up:Connect(function()
