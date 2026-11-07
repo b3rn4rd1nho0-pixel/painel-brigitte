@@ -26,7 +26,7 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// ÍCONE (ESCUDO GULOSOS FC)
+--// ÍCONE
 local icon = Instance.new("TextButton")
 icon.Size = UDim2.new(0, 45, 0, 45)
 icon.Position = UDim2.new(0, 20, 0, 100)
@@ -220,7 +220,7 @@ local function criarBotao(parent, texto, desc, cor, acao)
     stroke.Color = TEMA.Hover
 
     local txt = Instance.new("TextLabel", btn)
-    txt.Name = "TextLabel"
+    txt.Name = "Txt"
     txt.Size = UDim2.new(1, -10, 0, 14)
     txt.Position = UDim2.new(0, 8, 0, 4)
     txt.BackgroundTransparency = 1
@@ -250,11 +250,7 @@ local function criarBotao(parent, texto, desc, cor, acao)
     return btn
 end
 
-local function cmdDuplo(msg)
-    enviarChat(msg)
-    task.wait(1.2)
-    enviarChat(msg)
-end
+local function cmdDuplo(msg) enviarChat(msg); task.wait(1.2); enviarChat(msg) end
 
 --// ABA 1 — AÇÕES
 local abaAcoes = criarAba("AÇÕES", 1)
@@ -308,23 +304,19 @@ inputMsg.TextSize = 9
 inputMsg.Parent = boxRadio
 
 criarBotao(abaRadio, "ENVIAR RÁDIO", "Manda /r: [Q] [Msg]", TEMA.Verde, function()
-    local q = inputQ.Text
-    local m = inputMsg.Text
-    if q ~= "" and m ~= "" then
-        enviarChat("/r: " .. q .. " " .. m)
-    end
+    if inputQ.Text ~= "" and inputMsg.Text ~= "" then enviarChat("/r: " .. inputQ.Text .. " " .. inputMsg.Text) end
 end)
 
 local listaAberta = false
 local btnDropdown = criarBotao(abaRadio, "SELECIONAR CÓDIGO Q ▼", "Clique para ver a lista", TEMA.Azul, function()
     listaAberta = not listaAberta
     scrollLista.Visible = listaAberta
-    btnDropdown.TextLabel.Text = listaAberta and "FECHAR LISTA ▲" or "SELECIONAR CÓDIGO Q ▼"
+    btnDropdown:FindFirstChild("Txt").Text = listaAberta and "FECHAR LISTA ▲" or "SELECIONAR CÓDIGO Q ▼"
     atualizarTamanho()
 end)
 
 local scrollLista = Instance.new("ScrollingFrame", abaRadio)
-scrollLista.Size = UDim2.new(1, 0, 0, 180)
+scrollLista.Size = UDim2.new(1, 0, 0, 150)
 scrollLista.BackgroundColor3 = TEMA.Fundo
 scrollLista.BorderSizePixel = 0
 scrollLista.Visible = false
@@ -334,33 +326,20 @@ Instance.new("UICorner", scrollLista).CornerRadius = UDim.new(0, 4)
 
 local layoutLista = Instance.new("UIListLayout", scrollLista)
 layoutLista.Padding = UDim.new(0, 2)
-layoutLista.SortOrder = Enum.SortOrder.LayoutOrder
 
 local qcodes = {
-    {"QAP", "Aguardando ordens. 'Na escuta, aguardando instruções'."},
-    {"QRV", "Estou pronto. 'Rádio pronto para transmitir, pode falar'."},
-    {"QRA", "Identificação. 'Meu nome/número de identificação é...'."},
-    {"QTH", "Localização. 'Minha posição atual é...'."},
-    {"QTR", "Horário. 'O horário exato agora é...'."},
-    {"QRR", "Rádio padrão. 'Transmitindo para a central'."},
-    {"QTA", "Táxi/Viatura. 'Solicito viatura para apoio no local'."},
-    {"QTI", "Tático. 'Iniciando intervenção tática, código 3'."},
-    {"QSL", "Entendido. 'Confirmo que recebi e entendi a mensagem'."},
-    {"QSM", "Repetir. 'Não entendi, repita a última mensagem'."},
-    {"QSJ", "Valores. 'Referente ao pagamento ou dinheiro'."},
-    {"QSY", "Mudar freq. 'Vou trocar de canal, aguarde'."},
-    {"QRL", "Ocupado. 'Estou em ocorrência, não posso falar agora'."},
-    {"QRT", "Parar. 'Encerrando a transmissão de rádio'."},
-    {"QSD", "Defeito. 'Meu rádio está com problema técnico'."},
-    {"QSB", "Ruído. 'Sinal fraco, muita interferência'."},
-    {"QSA", "Sinal. 'A força do meu sinal é forte/fraca'."},
-    {"QRX", "Esperar. 'Aguarde um momento no rádio'."},
-    {"QRZ", "Quem é? 'Quem está chamando? Identifique-se'."},
-    {"QSO", "Direto. 'Posso falar diretamente com você'."},
-    {"QSP", "Retransmitir. 'Passe a mensagem para o comando'."},
-    {"QTX", "Desligar. 'Vou sair do rádio por um tempo'."},
-    {"QUD", "Urgente. 'Código vermelho, preciso de ajuda imediata'."},
-    {"QTV", "Vigilância. 'Mantendo vigilância no perímetro'."}
+    {"QAP", "Aguardando ordens. 'Na escuta, aguardando instruções'."}, {"QRV", "Estou pronto. 'Rádio pronto para transmitir, pode falar'."},
+    {"QRA", "Identificação. 'Meu nome/número de identificação é...'."}, {"QTH", "Localização. 'Minha posição atual é...'."},
+    {"QTR", "Horário. 'O horário exato agora é...'."}, {"QRR", "Rádio padrão. 'Transmitindo para a central'."},
+    {"QTA", "Táxi/Viatura. 'Solicito viatura para apoio no local'."}, {"QTI", "Tático. 'Iniciando intervenção tática, código 3'."},
+    {"QSL", "Entendido. 'Confirmo que recebi e entendi a mensagem'."}, {"QSM", "Repetir. 'Não entendi, repita a última mensagem'."},
+    {"QSJ", "Valores. 'Referente ao pagamento ou dinheiro'."}, {"QSY", "Mudar freq. 'Vou trocar de canal, aguarde'."},
+    {"QRL", "Ocupado. 'Estou em ocorrência, não posso falar agora'."}, {"QRT", "Parar. 'Encerrando a transmissão de rádio'."},
+    {"QSD", "Defeito. 'Meu rádio está com problema técnico'."}, {"QSB", "Ruído. 'Sinal fraco, muita interferência'."},
+    {"QSA", "Sinal. 'A força do meu sinal é forte/fraca'."}, {"QRX", "Esperar. 'Aguarde um momento no rádio'."},
+    {"QRZ", "Quem é? 'Quem está chamando? Identifique-se'."}, {"QSO", "Direto. 'Posso falar diretamente com você'."},
+    {"QSP", "Retransmitir. 'Passe a mensagem para o comando'."}, {"QTX", "Desligar. 'Vou sair do rádio por um tempo'."},
+    {"QUD", "Urgente. 'Código vermelho, preciso de ajuda imediata'."}, {"QTV", "Vigilância. 'Mantendo vigilância no perímetro'."}
 }
 
 for i, q in ipairs(qcodes) do
@@ -373,35 +352,21 @@ for i, q in ipairs(qcodes) do
     Instance.new("UICorner", btnQ).CornerRadius = UDim.new(0, 3)
     
     local qCode = Instance.new("TextLabel", btnQ)
-    qCode.Size = UDim2.new(0, 35, 1, 0)
-    qCode.Position = UDim2.new(0, 5, 0, 0)
-    qCode.BackgroundTransparency = 1
-    qCode.Text = q[1]
-    qCode.TextColor3 = TEMA.Azul
-    qCode.TextSize = 9
-    qCode.Font = Enum.Font.GothamBold
-    qCode.Parent = btnQ
+    qCode.Size = UDim2.new(0, 35, 1, 0); qCode.Position = UDim2.new(0, 5, 0, 0)
+    qCode.BackgroundTransparency = 1; qCode.Text = q[1]
+    qCode.TextColor3 = TEMA.Azul; qCode.TextSize = 9; qCode.Font = Enum.Font.GothamBold; qCode.Parent = btnQ
 
     local qDesc = Instance.new("TextLabel", btnQ)
-    qDesc.Size = UDim2.new(1, -45, 1, 0)
-    qDesc.Position = UDim2.new(0, 40, 0, 0)
-    qDesc.BackgroundTransparency = 1
-    qDesc.Text = q[2]
-    qDesc.TextColor3 = TEMA.TextoSub
-    qDesc.TextSize = 8
-    qDesc.TextXAlignment = Enum.TextXAlignment.Left
-    qDesc.TextWrapped = true
-    qDesc.Parent = btnQ
+    qDesc.Size = UDim2.new(1, -45, 1, 0); qDesc.Position = UDim2.new(0, 40, 0, 0)
+    qDesc.BackgroundTransparency = 1; qDesc.Text = q[2]
+    qDesc.TextColor3 = TEMA.TextoSub; qDesc.TextSize = 8; qDesc.TextXAlignment = Enum.TextXAlignment.Left; qDesc.TextWrapped = true; qDesc.Parent = btnQ
     
     btnQ.MouseEnter:Connect(function() btnQ.BackgroundColor3 = TEMA.Hover end)
     btnQ.MouseLeave:Connect(function() btnQ.BackgroundColor3 = TEMA.Card end)
     btnQ.MouseButton1Click:Connect(function()
-        inputQ.Text = q[1]
-        listaAberta = false
-        scrollLista.Visible = false
-        btnDropdown.TextLabel.Text = "SELECIONAR CÓDIGO Q ▼"
-        inputMsg:CaptureFocus()
-        atualizarTamanho()
+        inputQ.Text = q[1]; listaAberta = false; scrollLista.Visible = false
+        btnDropdown:FindFirstChild("Txt").Text = "SELECIONAR CÓDIGO Q ▼"
+        inputMsg:CaptureFocus(); atualizarTamanho()
     end)
 end
 
@@ -409,7 +374,7 @@ layoutLista:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     scrollLista.CanvasSize = UDim2.new(0, 0, 0, layoutLista.AbsoluteContentSize.Y + 4)
 end)
 
---// ABA 4 — JJ's (1.2s)
+--// ABA 4 — JJ's
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -418,46 +383,30 @@ boxJJ.Parent = abaJJ
 Instance.new("UICorner", boxJJ).CornerRadius = UDim.new(0, 4)
 
 local inputIni = Instance.new("TextBox", boxJJ)
-inputIni.Size = UDim2.new(0.5, -2, 1, 0)
-inputIni.BackgroundTransparency = 1
-inputIni.PlaceholderText = "De"
-inputIni.TextColor3 = TEMA.Texto
-inputIni.TextSize = 9
-inputIni.Parent = boxJJ
+inputIni.Size = UDim2.new(0.5, -2, 1, 0); inputIni.BackgroundTransparency = 1
+inputIni.PlaceholderText = "De"; inputIni.TextColor3 = TEMA.Texto; inputIni.TextSize = 9; inputIni.Parent = boxJJ
 
 local inputFim = Instance.new("TextBox", boxJJ)
-inputFim.Size = UDim2.new(0.5, -2, 1, 0)
-inputFim.Position = UDim2.new(0.5, 2, 0, 0)
-inputFim.BackgroundTransparency = 1
-inputFim.PlaceholderText = "Até"
-inputFim.TextColor3 = TEMA.Texto
-inputFim.TextSize = 9
-inputFim.Parent = boxJJ
+inputFim.Size = UDim2.new(0.5, -2, 1, 0); inputFim.Position = UDim2.new(0.5, 2, 0, 0)
+inputFim.BackgroundTransparency = 1; inputFim.PlaceholderText = "Até"
+inputFim.TextColor3 = TEMA.Texto; inputFim.TextSize = 9; inputFim.Parent = boxJJ
 
 local contando, token = false, 0
 criarBotao(abaJJ, "INICIAR", "1.2s por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
-    contando = true
-    token = token + 1
-    local meuToken = token
+    contando = true; token = token + 1; local meuToken = token
     task.spawn(function()
         for i = n1, n2 do
             if not contando or token ~= meuToken then break end
             enviarChat(numExt(i) .. "!")
-            local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum and hum.Health > 0 then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
+            local char = player.Character; local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
             task.wait(1.2)
         end
     end)
 end)
-criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
-    contando = false
-    token = token + 1
-end)
+criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function() contando = false; token = token + 1 end)
 
 --// ABA 5 — ESP
 local abaESP = criarAba("ESP", 5)
@@ -470,15 +419,9 @@ local function atualizarBolinhas()
             if espAtivo then
                 if not espFolder:FindFirstChild(plr.Name) then
                     local bb = Instance.new("BillboardGui", espFolder)
-                    bb.Name = plr.Name
-                    bb.Size = UDim2.new(0, 10, 0, 10)
-                    bb.AlwaysOnTop = true
-                    bb.Adornee = plr.Character.Head
-                    bb.StudsOffset = Vector3.new(0, 1.5, 0)
-                    
-                    local dt = Instance.new("Frame", bb)
-                    dt.Size = UDim2.new(1, 0, 1, 0)
-                    dt.BackgroundColor3 = TEMA.Verde
+                    bb.Name = plr.Name; bb.Size = UDim2.new(0, 10, 0, 10); bb.AlwaysOnTop = true
+                    bb.Adornee = plr.Character.Head; bb.StudsOffset = Vector3.new(0, 1.5, 0)
+                    local dt = Instance.new("Frame", bb); dt.Size = UDim2.new(1, 0, 1, 0); dt.BackgroundColor3 = TEMA.Verde
                     Instance.new("UICorner", dt).CornerRadius = UDim.new(1, 0)
                 end
             else
@@ -489,14 +432,14 @@ local function atualizarBolinhas()
     end
 end
 
-local btnEsp = criarBotao(abaESP, "ESP: ATIVADO", "Clique para desativar as bolinhas", TEMA.Verde, function()
+local btnEsp = criarBotao(abaESP, "ESP: ATIVADO", "Clique para desativar", TEMA.Verde, function()
     espAtivo = not espAtivo
     if espAtivo then
-        btnEsp.TextLabel.Text = "ESP: ATIVADO"
-        btnEsp.TextLabel.TextColor3 = TEMA.Verde
+        btnEsp:FindFirstChild("Txt").Text = "ESP: ATIVADO"
+        btnEsp:FindFirstChild("Txt").TextColor3 = TEMA.Verde
     else
-        btnEsp.TextLabel.Text = "ESP: DESATIVADO"
-        btnEsp.TextLabel.TextColor3 = TEMA.Vermelho
+        btnEsp:FindFirstChild("Txt").Text = "ESP: DESATIVADO"
+        btnEsp:FindFirstChild("Txt").TextColor3 = TEMA.Vermelho
         for _, b in pairs(espFolder:GetChildren()) do b:Destroy() end
     end
     atualizarBolinhas()
@@ -509,14 +452,14 @@ task.spawn(function()
     end
 end)
 
---// COMPATIBILIDADE COM AS ABAS E AJUSTE DE TAMANHO
+--// AJUSTE FINAL E ROLAGEM
 function atualizarTamanho()
     local abaAtual
     for _, a in pairs(abas) do if a.scroll.Visible then abaAtual = a.scroll break end end
     if not abaAtual then return end
     local h = abaAtual.UIListLayout.AbsoluteContentSize.Y + 5
     abaAtual.CanvasSize = UDim2.new(0, 0, 0, h)
-    local alturaVisivel = math.min(h, 280)
+    local alturaVisivel = math.min(h, 260)
     contentFrame.Size = UDim2.new(1, -10, 0, alturaVisivel)
     panel.Size = UDim2.new(0, 220, 0, 66 + alturaVisivel + 5)
 end
@@ -526,7 +469,7 @@ abas["AÇÕES"].scroll.Visible = true
 TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Verde, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
 atualizarTamanho()
 
---// ARRASTAR E FECHAR
+--// ARRASTAR E ABRIR
 local function arrastar(f, h)
     local on, start, pos = false, nil, nil
     h.InputBegan:Connect(function(i)
@@ -542,24 +485,20 @@ local function arrastar(f, h)
         end
     end)
 end
-arrastar(panel, header)
-arrastar(icon, icon)
+arrastar(panel, header); arrastar(icon, icon)
 
 local open, anim = false, false
 local function togglePanel()
     if anim then return end; anim = true
     if not open then
-        atualizarTamanho()
-        local finalSize = panel.Size
+        atualizarTamanho(); local finalSize = panel.Size
         panel.Position = UDim2.new(0, icon.Position.X.Offset + 55, 0, icon.Position.Y.Offset)
-        panel.Visible = true
-        panel.Size = UDim2.new(0, 220, 0, 0)
+        panel.Visible = true; panel.Size = UDim2.new(0, 220, 0, 0)
         TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = finalSize}):Play()
         open = true
     else
         local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 220, 0, 0)})
-        t:Play(); t.Completed:Connect(function() panel.Visible = false end)
-        open = false
+        t:Play(); t.Completed:Connect(function() panel.Visible = false end); open = false
     end
     task.wait(0.25); anim = false
 end
@@ -570,10 +509,5 @@ closeBtn.MouseButton1Click:Connect(togglePanel)
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
 icon.MouseButton1Up:Connect(function()
-    if seg then
-        seg = false
-        if tick() - tempo >= 3 then
-            if gui then gui:Destroy() end
-        end
-    end
+    if seg then seg = false; if tick() - tempo >= 3 then if gui then gui:Destroy() end end end
 end)
