@@ -76,9 +76,9 @@ txtBot.TextColor3 = Color3.fromRGB(0, 0, 0)
 txtBot.TextSize = 6
 txtBot.Font = Enum.Font.GothamBold
 
---// PAINEL
+--// PAINEL (Aumentei um pouco a largura pra caber as abas)
 local panel = Instance.new("Frame")
-panel.Size = UDim2.new(0, 200, 0, 0)
+panel.Size = UDim2.new(0, 220, 0, 0)
 panel.Position = UDim2.new(0, 20, 0, 150)
 panel.BackgroundColor3 = TEMA.Painel
 panel.Visible = false
@@ -125,18 +125,22 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS
-local tabsBar = Instance.new("Frame", panel)
-tabsBar.Size = UDim2.new(1, -10, 0, 22)
+--// MENU DE ABAS (Aumentado e com Scroll Horizontal)
+local tabsBar = Instance.new("ScrollingFrame", panel)
+tabsBar.Size = UDim2.new(1, -10, 0, 32) -- Mais alto
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
 tabsBar.BackgroundTransparency = 1
+tabsBar.BorderSizePixel = 0
+tabsBar.ScrollBarThickness = 0
+tabsBar.ScrollingDirection = Enum.ScrollingDirection.X -- Permite rolar pro lado se faltar espaço
+
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
-tabsLayout.Padding = UDim.new(0, 3)
+tabsLayout.Padding = UDim.new(0, 4)
 
 local contentFrame = Instance.new("Frame", panel)
 contentFrame.Size = UDim2.new(1, -10, 0, 0)
-contentFrame.Position = UDim2.new(0, 5, 0, 64)
+contentFrame.Position = UDim2.new(0, 5, 0, 74) -- Desceu um pouco
 contentFrame.BackgroundTransparency = 1
 
 --// CHAT
@@ -148,15 +152,15 @@ local function enviarChat(msg)
     end
 end
 
---// SISTEMA DE ABAS (Rolagem Corrigida)
+--// SISTEMA DE ABAS
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
-    btn.Size = UDim2.new(0, 60, 1, 0)
+    btn.Size = UDim2.new(0, 75, 1, 0) -- Botão de aba maior
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 9
+    btn.TextSize = 10
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
@@ -166,12 +170,15 @@ local function criarAba(nome, ordem)
     scroll.Size = UDim2.new(1, 0, 1, 0)
     scroll.BackgroundTransparency = 1
     scroll.BorderSizePixel = 0
-    scroll.ScrollBarThickness = 3
+    scroll.ScrollBarThickness = 4
     scroll.ScrollBarImageColor3 = TEMA.Azul
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     scroll.ScrollingDirection = Enum.ScrollingDirection.Y
     scroll.ClipsDescendants = true
     scroll.Visible = false
+    -- ISSO AQUI CONSERTA A ROLAGEM DE BUGAR
+    scroll.ScrollingEnabled = true 
+    scroll.ElasticBehavior = Enum.ElasticBehavior.Never 
 
     local list = Instance.new("UIListLayout", scroll)
     list.Padding = UDim.new(0, 4)
@@ -208,7 +215,7 @@ end
 --// GERADOR DE BOTÕES
 local function criarBotao(parent, texto, desc, cor, acao)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 32)
+    btn.Size = UDim2.new(1, 0, 0, 34)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = ""
     btn.AutoButtonColor = false
@@ -218,7 +225,7 @@ local function criarBotao(parent, texto, desc, cor, acao)
 
     local txt = Instance.new("TextLabel", btn)
     txt.Size = UDim2.new(1, -10, 0, 14)
-    txt.Position = UDim2.new(0, 8, 0, 3)
+    txt.Position = UDim2.new(0, 8, 0, 4)
     txt.BackgroundTransparency = 1
     txt.Text = texto
     txt.TextColor3 = TEMA.Texto
@@ -228,7 +235,7 @@ local function criarBotao(parent, texto, desc, cor, acao)
 
     local sub = Instance.new("TextLabel", btn)
     sub.Size = UDim2.new(1, -10, 0, 10)
-    sub.Position = UDim2.new(0, 8, 0, 18)
+    sub.Position = UDim2.new(0, 8, 0, 20)
     sub.BackgroundTransparency = 1
     sub.Text = desc
     sub.TextColor3 = TEMA.TextoSub
@@ -319,7 +326,7 @@ for i, q in ipairs(qcodes) do
     end)
 end
 
---// ABA 4 — JJ's (Rápido 0.5s)
+--// ABA 4 — JJ's (CORRIGIDO: 0.7s E PULO NORMAL)
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -345,7 +352,7 @@ inputFim.TextSize = 9
 inputFim.Parent = boxJJ
 
 local contando, token = false, 0
-criarBotao(abaJJ, "INICIAR", "0.5s por msg", TEMA.Verde, function()
+criarBotao(abaJJ, "INICIAR", "0.7s por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
     contando = true
@@ -354,12 +361,19 @@ criarBotao(abaJJ, "INICIAR", "0.5s por msg", TEMA.Verde, function()
     task.spawn(function()
         for i = n1, n2 do
             if not contando or token ~= meuToken then break end
+            
             enviarChat(numExt(i) .. "!")
-            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            
+            -- Pulo natural (só pula se estiver no chão)
+            local char = player.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated and hum:GetState() ~= Enum.HumanoidStateType.Dead then
+                if hum:GetState() == Enum.HumanoidStateType.Landed or hum:GetState() == Enum.HumanoidStateType.Running or hum:GetState() == Enum.HumanoidStateType.RunningNoPhysics then
+                    hum.Jump = true
+                end
             end
-            task.wait(0.5)
+            
+            task.wait(0.7) -- Tempo alterado para 0.7
         end
     end)
 end)
@@ -368,16 +382,16 @@ criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     token = token + 1
 end)
 
---// AJUSTE DE TAMANHO E ROLAGEM
+--// AJUSTE DE TAMANHO E ROLAGEM FINAL
 function atualizarTamanho()
     local abaAtual
     for _, a in pairs(abas) do if a.scroll.Visible then abaAtual = a.scroll break end end
     if not abaAtual then return end
     local h = abaAtual.UIListLayout.AbsoluteContentSize.Y + 5
     abaAtual.CanvasSize = UDim2.new(0, 0, 0, h)
-    local alturaVisivel = math.min(h, 280)
+    local alturaVisivel = math.min(h, 260)
     contentFrame.Size = UDim2.new(1, -10, 0, alturaVisivel)
-    panel.Size = UDim2.new(0, 200, 0, 64 + alturaVisivel + 5)
+    panel.Size = UDim2.new(0, 220, 0, 74 + alturaVisivel + 5)
 end
 
 for _, a in pairs(abas) do a.list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(atualizarTamanho) end
@@ -385,7 +399,7 @@ abas["AÇÕES"].scroll.Visible = true
 TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Verde, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
 atualizarTamanho()
 
---// ARRASTAR E ABRIR
+--// ARRASTAR
 local function arrastar(f, h)
     local on, start, pos = false, nil, nil
     h.InputBegan:Connect(function(i)
@@ -412,11 +426,11 @@ local function togglePanel()
         local finalSize = panel.Size
         panel.Position = UDim2.new(0, icon.Position.X.Offset + 55, 0, icon.Position.Y.Offset)
         panel.Visible = true
-        panel.Size = UDim2.new(0, 200, 0, 0)
+        panel.Size = UDim2.new(0, 220, 0, 0)
         TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = finalSize}):Play()
         open = true
     else
-        local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 200, 0, 0)})
+        local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 220, 0, 0)})
         t:Play(); t.Completed:Connect(function() panel.Visible = false end)
         open = false
     end
@@ -426,7 +440,6 @@ end
 icon.MouseButton1Click:Connect(togglePanel)
 closeBtn.MouseButton1Click:Connect(togglePanel)
 
---// AUTO-DESTRUIÇÃO
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
 icon.MouseButton1Up:Connect(function()
