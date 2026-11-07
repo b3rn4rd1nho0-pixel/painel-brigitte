@@ -125,7 +125,7 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS (Ajustado para 5 abas)
+--// MENU DE ABAS
 local tabsBar = Instance.new("Frame", panel)
 tabsBar.Size = UDim2.new(1, -10, 0, 26)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
@@ -220,6 +220,7 @@ local function criarBotao(parent, texto, desc, cor, acao)
     stroke.Color = TEMA.Hover
 
     local txt = Instance.new("TextLabel", btn)
+    txt.Name = "TextLabel"
     txt.Size = UDim2.new(1, -10, 0, 14)
     txt.Position = UDim2.new(0, 8, 0, 4)
     txt.BackgroundTransparency = 1
@@ -458,7 +459,7 @@ criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     token = token + 1
 end)
 
---// ABA 5 — ESP (LIGAR/DESLIGAR)
+--// ABA 5 — ESP
 local abaESP = criarAba("ESP", 5)
 local espAtivo = true
 local espFolder = Instance.new("Folder", gui)
@@ -508,10 +509,7 @@ task.spawn(function()
     end
 end)
 
---// COMPATIBILIDADE COM AS ABAS
-abas["ESP"] = { btn = abaESP.Parent, scroll = abaESP, list = abaESP.UIListLayout }
-
---// AJUSTE DE TAMANHO E ROLAGEM FINAL
+--// COMPATIBILIDADE COM AS ABAS E AJUSTE DE TAMANHO
 function atualizarTamanho()
     local abaAtual
     for _, a in pairs(abas) do if a.scroll.Visible then abaAtual = a.scroll break end end
@@ -528,7 +526,7 @@ abas["AÇÕES"].scroll.Visible = true
 TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Verde, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
 atualizarTamanho()
 
---// ARRASTAR
+--// ARRASTAR E FECHAR
 local function arrastar(f, h)
     local on, start, pos = false, nil, nil
     h.InputBegan:Connect(function(i)
@@ -547,7 +545,6 @@ end
 arrastar(panel, header)
 arrastar(icon, icon)
 
---// ABRIR E FECHAR
 local open, anim = false, false
 local function togglePanel()
     if anim then return end; anim = true
@@ -570,7 +567,6 @@ end
 icon.MouseButton1Click:Connect(togglePanel)
 closeBtn.MouseButton1Click:Connect(togglePanel)
 
---// AUTO-DESTRUIÇÃO
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
 icon.MouseButton1Up:Connect(function()
