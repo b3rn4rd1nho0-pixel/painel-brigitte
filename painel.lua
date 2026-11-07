@@ -125,7 +125,7 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS (Fixas, sem precisar rolar)
+--// MENU DE ABAS (Fixas, sem rolagem horizontal)
 local tabsBar = Instance.new("Frame", panel)
 tabsBar.Size = UDim2.new(1, -10, 0, 26)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
@@ -134,7 +134,7 @@ tabsBar.BackgroundTransparency = 1
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
 tabsLayout.Padding = UDim.new(0, 3)
-tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Centraliza as abas
+tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local contentFrame = Instance.new("Frame", panel)
 contentFrame.Size = UDim2.new(1, -10, 0, 0)
@@ -154,11 +154,11 @@ end
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
-    btn.Size = UDim2.new(0, 49, 1, 0) -- Tamanho reduzido pra caber os 4 na tela
+    btn.Size = UDim2.new(0, 49, 1, 0)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 8 -- Fonte menor
+    btn.TextSize = 8
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
@@ -322,7 +322,7 @@ for i, q in ipairs(qcodes) do
     end)
 end
 
---// ABA 4 — JJ's (0.7s, Pulo Natural)
+--// ABA 4 — JJ's (1.0s, Pulo Corrigido)
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -348,7 +348,7 @@ inputFim.TextSize = 9
 inputFim.Parent = boxJJ
 
 local contando, token = false, 0
-criarBotao(abaJJ, "INICIAR", "0.7s por msg", TEMA.Verde, function()
+criarBotao(abaJJ, "INICIAR", "1.0s por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
     contando = true
@@ -360,15 +360,19 @@ criarBotao(abaJJ, "INICIAR", "0.7s por msg", TEMA.Verde, function()
             
             enviarChat(numExt(i) .. "!")
             
+            -- Pulo Corrigido (Força o pulo e previne super pulo)
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
             if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated and hum:GetState() ~= Enum.HumanoidStateType.Dead then
-                if hum:GetState() == Enum.HumanoidStateType.Landed or hum:GetState() == Enum.HumanoidStateType.Running or hum:GetState() == Enum.HumanoidStateType.RunningNoPhysics then
+                hum.Jump = true
+                -- Pequeno delay para o Roblox processar o pulo antes de mandar o próximo
+                task.wait(0.15) 
+                if hum:GetState() == Enum.HumanoidStateType.Landed or hum:GetState() == Enum.HumanoidStateType.Running then
                     hum.Jump = true
                 end
             end
             
-            task.wait(0.7)
+            task.wait(1.0) -- 1 Segundo
         end
     end)
 end)
