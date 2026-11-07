@@ -5,125 +5,107 @@ local TextChatService = game:GetService("TextChatService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
---// TEMA TÁTICO
+--// TEMA
 local TEMA = {
-    Fundo          = Color3.fromRGB(10, 12, 10),
-    Painel         = Color3.fromRGB(20, 24, 20),
-    Card           = Color3.fromRGB(30, 36, 30),
-    Hover          = Color3.fromRGB(45, 55, 45),
-    Destaque       = Color3.fromRGB(80, 160, 80),
-    Texto          = Color3.fromRGB(220, 230, 220),
-    TextoSub       = Color3.fromRGB(140, 150, 140),
-    Vermelho       = Color3.fromRGB(180, 60, 60),
+    Fundo      = Color3.fromRGB(15, 17, 20),
+    Painel     = Color3.fromRGB(22, 25, 30),
+    Card       = Color3.fromRGB(32, 38, 45),
+    Hover      = Color3.fromRGB(45, 55, 65),
+    Azul       = Color3.fromRGB(60, 150, 255),
+    Texto      = Color3.fromRGB(220, 225, 230),
+    TextoSub   = Color3.fromRGB(130, 140, 150),
+    Vermelho   = Color3.fromRGB(200, 60, 60),
+    Verde      = Color3.fromRGB(50, 180, 80),
 }
 
 --// GUI BASE
 local gui = Instance.new("ScreenGui")
-gui.Name = "BrigitteTactical"
+gui.Name = "PainelTatico"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.IgnoreGuiInset = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
---// ÍCONE FLUTUANTE
+--// ÍCONE
 local icon = Instance.new("TextButton")
 icon.Size = UDim2.new(0, 40, 0, 40)
 icon.Position = UDim2.new(0, 20, 0, 100)
-icon.BackgroundColor3 = TEMA.Fundo
-icon.Text = "T"
-icon.TextColor3 = TEMA.Destaque
-icon.TextSize = 20
-icon.Font = Enum.Font.GothamBlack
+icon.BackgroundColor3 = TEMA.Painel
+icon.Text = ">"
+icon.TextColor3 = TEMA.Azul
+icon.TextSize = 18
+icon.Font = Enum.Font.GothamBold
 icon.Parent = gui
 icon.AutoButtonColor = false
+Instance.new("UICorner", icon).CornerRadius = UDim.new(0, 6)
+local iconStroke = Instance.new("UIStroke", icon)
+iconStroke.Color = TEMA.Azul
+iconStroke.Thickness = 2
 
-local iconCorner = Instance.new("UICorner")
-iconCorner.CornerRadius = UDim.new(1, 0)
-iconCorner.Parent = icon
-
-local iconStroke = Instance.new("UIStroke")
-iconStroke.Color = TEMA.Destaque
-iconStroke.Thickness = 1.5
-iconStroke.Parent = icon
-
---// PAINEL PRINCIPAL
+--// PAINEL
 local panel = Instance.new("Frame")
-panel.Size = UDim2.new(0, 180, 0, 0)
+panel.Size = UDim2.new(0, 200, 0, 0)
 panel.Position = UDim2.new(0, 20, 0, 150)
 panel.BackgroundColor3 = TEMA.Painel
 panel.Visible = false
 panel.ClipsDescendants = true
 panel.Parent = gui
-
-local panelCorner = Instance.new("UICorner")
-panelCorner.CornerRadius = UDim.new(0, 6)
-panelCorner.Parent = panel
-
-local panelStroke = Instance.new("UIStroke")
-panelStroke.Color = Color3.fromRGB(40, 50, 40)
+Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
+local panelStroke = Instance.new("UIStroke", panel)
+panelStroke.Color = TEMA.Card
 panelStroke.Thickness = 1
-panelStroke.Parent = panel
 
 --// HEADER
-local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 26)
+local header = Instance.new("Frame", panel)
+header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = TEMA.Card
-header.Parent = panel
-
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 6)
-headerCorner.Parent = header
-
-local headerLine = Instance.new("Frame")
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
+local headerFix = Instance.new("Frame", header) -- Pra tampar o arredondamento embaixo
+headerFix.Size = UDim2.new(1, 0, 0, 10)
+headerFix.Position = UDim2.new(0, 0, 1, -10)
+headerFix.BackgroundColor3 = TEMA.Card
+headerFix.BorderSizePixel = 0
+local headerLine = Instance.new("Frame", header)
 headerLine.Size = UDim2.new(1, 0, 0, 2)
 headerLine.Position = UDim2.new(0, 0, 1, -2)
-headerLine.BackgroundColor3 = TEMA.Destaque
-headerLine.Parent = header
+headerLine.BackgroundColor3 = TEMA.Azul
+headerLine.BorderSizePixel = 0
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -30, 1, 0)
-title.Position = UDim2.new(0, 8, 0, 0)
+local title = Instance.new("TextLabel", header)
+title.Size = UDim2.new(1, -40, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "COMANDO TÁTICO"
-title.TextColor3 = TEMA.Destaque
+title.TextColor3 = TEMA.Azul
 title.TextSize = 10
 title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = header
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 16, 0, 16)
-closeBtn.Position = UDim2.new(1, -20, 0.5, -8)
-closeBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
+local closeBtn = Instance.new("TextButton", header)
+closeBtn.Size = UDim2.new(0, 20, 0, 20)
+closeBtn.Position = UDim2.new(1, -25, 0.5, -10)
+closeBtn.BackgroundColor3 = TEMA.Fundo
 closeBtn.Text = "X"
 closeBtn.TextColor3 = TEMA.Vermelho
-closeBtn.TextSize = 9
+closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.Parent = header
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 3)
-closeCorner.Parent = closeBtn
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
 --// MENU DE ABAS
-local tabsBar = Instance.new("Frame")
-tabsBar.Size = UDim2.new(1, -8, 0, 18)
-tabsBar.Position = UDim2.new(0, 4, 0, 28)
+local tabsBar = Instance.new("Frame", panel)
+tabsBar.Size = UDim2.new(1, -10, 0, 22)
+tabsBar.Position = UDim2.new(0, 5, 0, 36)
 tabsBar.BackgroundTransparency = 1
-tabsBar.Parent = panel
-
-local tabsLayout = Instance.new("UIListLayout")
+local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
-tabsLayout.Padding = UDim.new(0, 2)
-tabsLayout.Parent = tabsBar
+tabsLayout.Padding = UDim.new(0, 3)
 
---// CONTAINER DE CONTEÚDO
-local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -8, 0, 0)
-contentFrame.Position = UDim2.new(0, 4, 0, 48)
+local contentFrame = Instance.new("Frame", panel)
+contentFrame.Size = UDim2.new(1, -10, 0, 0)
+contentFrame.Position = UDim2.new(0, 5, 0, 64)
 contentFrame.BackgroundTransparency = 1
-contentFrame.Parent = panel
 
---// FUNÇÕES BÁSICAS
+--// CHAT
 local function enviarChat(msg)
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
         TextChatService.TextChannels.RBXGeneral:SendAsync(msg)
@@ -135,30 +117,27 @@ end
 --// SISTEMA DE ABAS
 local abas = {}
 local function criarAba(nome, ordem)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 40, 1, 0)
+    local btn = Instance.new("TextButton", tabsBar)
+    btn.Size = UDim2.new(0, 60, 1, 0)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 8
+    btn.TextSize = 9
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
-    btn.Parent = tabsBar
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
 
-    local scroll = Instance.new("ScrollingFrame")
+    local scroll = Instance.new("ScrollingFrame", contentFrame)
     scroll.Size = UDim2.new(1, 0, 1, 0)
     scroll.BackgroundTransparency = 1
     scroll.BorderSizePixel = 0
-    scroll.ScrollBarThickness = 2
-    scroll.ScrollBarImageColor3 = TEMA.Destaque
+    scroll.ScrollBarThickness = 3
+    scroll.ScrollBarImageColor3 = TEMA.Azul
     scroll.Visible = false
-    scroll.Parent = contentFrame
 
     local list = Instance.new("UIListLayout", scroll)
-    list.Padding = UDim.new(0, 3)
-    list.SortOrder = Enum.SortOrder.LayoutOrder
+    list.Padding = UDim.new(0, 4)
 
     abas[nome] = { btn = btn, scroll = scroll, list = list }
 
@@ -168,13 +147,13 @@ local function criarAba(nome, ordem)
             TweenService:Create(a.btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Card, TextColor3 = TEMA.TextoSub }):Play()
         end
         scroll.Visible = true
-        TweenService:Create(btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Destaque, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Azul, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
         atualizarTamanho()
     end)
     return scroll
 end
 
---// CONVERSOR DE NÚMEROS (JJ's)
+--// CONVERSOR JJ's
 local un = {[1]="UM",[2]="DOIS",[3]="TRÊS",[4]="QUATRO",[5]="CINCO",[6]="SEIS",[7]="SETE",[8]="OITO",[9]="NOVE"}
 local esp = {[10]="DEZ",[11]="ONZE",[12]="DOZE",[13]="TREZE",[14]="CATORZE",[15]="QUINZE",[16]="DEZESSEIS",[17]="DEZESSETE",[18]="DEZOITO",[19]="DEZENOVE"}
 local dez = {[2]="VINTE",[3]="TRINTA",[4]="QUARENTA",[5]="CINQUENTA",[6]="SESSENTA",[7]="SETENTA",[8]="OITENTA",[9]="NOVENTA"}
@@ -190,38 +169,36 @@ local function numExt(n)
 end
 --// GERADOR DE BOTÕES
 local function criarBotao(parent, texto, desc, cor, acao)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 28)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size = UDim2.new(1, 0, 0, 32)
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = ""
     btn.AutoButtonColor = false
-    btn.Parent = parent
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
     local stroke = Instance.new("UIStroke", btn)
-    stroke.Color = Color3.fromRGB(40, 50, 40)
+    stroke.Color = TEMA.Hover
 
     local txt = Instance.new("TextLabel", btn)
     txt.Size = UDim2.new(1, -10, 0, 14)
-    txt.Position = UDim2.new(0, 6, 0, 1)
+    txt.Position = UDim2.new(0, 8, 0, 3)
     txt.BackgroundTransparency = 1
     txt.Text = texto
     txt.TextColor3 = TEMA.Texto
-    txt.TextSize = 9
+    txt.TextSize = 10
     txt.Font = Enum.Font.GothamBold
     txt.TextXAlignment = Enum.TextXAlignment.Left
 
     local sub = Instance.new("TextLabel", btn)
     sub.Size = UDim2.new(1, -10, 0, 10)
-    sub.Position = UDim2.new(0, 6, 0, 15)
+    sub.Position = UDim2.new(0, 8, 0, 18)
     sub.BackgroundTransparency = 1
     sub.Text = desc
     sub.TextColor3 = TEMA.TextoSub
     sub.TextSize = 8
-    sub.Font = Enum.Font.Gotham
     sub.TextXAlignment = Enum.TextXAlignment.Left
 
     btn.MouseEnter:Connect(function() TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = TEMA.Hover}):Play(); stroke.Color = cor end)
-    btn.MouseLeave:Connect(function() TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = TEMA.Card}):Play(); stroke.Color = Color3.fromRGB(40, 50, 40) end)
+    btn.MouseLeave:Connect(function() TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = TEMA.Card}):Play(); stroke.Color = TEMA.Hover end)
     
     btn.MouseButton1Click:Connect(function()
         TweenService:Create(btn, TweenInfo.new(0.05), {BackgroundColor3 = cor}):Play()
@@ -238,13 +215,13 @@ local function cmdDuplo(msg)
 end
 
 --// ABA 1 — AÇÕES
-local abaAcoes = criarAba("AÇÃO", 1)
+local abaAcoes = criarAba("AÇÕES", 1)
 local acoes = {
     {".mat", "Duplo", TEMA.Vermelho, function() cmdDuplo(".mat") end},
     {".render", "Duplo", TEMA.Vermelho, function() cmdDuplo(".render") end},
-    {".furar", "Duplo", TEMA.Vermelho, function() cmdDuplo(".furar") end},
-    {"Algemar", "Único", TEMA.Destaque, function() enviarChat("Algemando suspeito.") end},
-    {"Revistar", "Único", TEMA.Destaque, function() enviarChat("Revistando suspeito.") end},
+    {".furar pneu", "Duplo", TEMA.Vermelho, function() cmdDuplo(".furar pneu") end},
+    {".algemar", "Único", TEMA.Azul, function() enviarChat(".algemar") end},
+    {".revistar", "Único", TEMA.Azul, function() enviarChat(".revistar") end},
     {".soco", "Único", TEMA.Card, function() enviarChat(".soco") end},
     {".chute", "Único", TEMA.Card, function() enviarChat(".chute") end},
     {".pegar", "Único", TEMA.Card, function() enviarChat(".pegar") end},
@@ -254,17 +231,16 @@ for _, a in ipairs(acoes) do criarBotao(abaAcoes, a[1], a[2], a[3], a[4]) end
 --// ABA 2 — VEÍCULOS
 local abaVeic = criarAba("VEÍC", 2)
 local veiculos = {
-    {"Spawn Viatura", "Puxar carro", TEMA.Destaque, function() enviarChat(".spawn viatura") end},
-    {"Reparar Carro", "Consertar", TEMA.Destaque, function() enviarChat(".reparar") end},
+    {"Spawn Viatura", "Puxar carro", TEMA.Azul, function() enviarChat(".spawn viatura") end},
+    {"Reparar Carro", "Consertar", TEMA.Azul, function() enviarChat(".reparar") end},
     {"Rajar Carro", "Duplo", TEMA.Vermelho, function() cmdDuplo(".rajar carro") end},
     {"Rajar Heli", "Duplo", TEMA.Vermelho, function() cmdDuplo(".rajar heli") end},
 }
 for _, v in ipairs(veiculos) do criarBotao(abaVeic, v[1], v[2], v[3], v[4]) end
 
 --// ABA 3 — RÁDIO E CÓDIGOS Q
-local abaRadio = criarAba("RÁD", 3)
+local abaRadio = criarAba("RÁDIO", 3)
 
--- Inputs do Rádio
 local boxRadio = Instance.new("Frame", abaRadio)
 boxRadio.Size = UDim2.new(1, 0, 0, 45)
 boxRadio.BackgroundColor3 = TEMA.Fundo
@@ -290,8 +266,8 @@ inputMsg.TextColor3 = TEMA.Texto
 inputMsg.TextSize = 9
 inputMsg.Parent = boxRadio
 
--- Botão de Transmitir
-criarBotao(abaRadio, "TRANSMITIR", "Manda /r: QRR Mensagem", TEMA.Destaque, function()
+-- BOTÃO DE ENVIAR RÁDIO
+criarBotao(abaRadio, "ENVIAR RÁDIO", "Manda /r: [Q] [Msg]", TEMA.Verde, function()
     local q = inputQ.Text
     local m = inputMsg.Text
     if q ~= "" and m ~= "" then
@@ -299,21 +275,19 @@ criarBotao(abaRadio, "TRANSMITIR", "Manda /r: QRR Mensagem", TEMA.Destaque, func
     end
 end)
 
--- Lista de Códigos Q para clicar e preencher
 local qcodes = {
     "QRR - Rádio", "QTA - Táxi", "QTI - Tático", "QTH - Localização", 
     "QSL - Entendido", "QAP - Na escuta", "QSJ - Dinheiro", "QSM - Repetir"
 }
 for i, q in ipairs(qcodes) do
-    local btnQ = criarBotao(abaRadio, q, "Clique para selecionar", TEMA.Card, function()
-        -- Pega só a sigla (ex: "QRR")
+    criarBotao(abaRadio, q, "Clique para selecionar", TEMA.Card, function()
         inputQ.Text = string.sub(q, 1, 3)
-        inputMsg:CaptureFocus() -- Já foca na mensagem pra você digitar
+        inputMsg:CaptureFocus()
     end)
 end
 
---// ABA 4 — JJ's
-local abaJJ = criarAba("JJ", 4)
+--// ABA 4 — JJ's (CORRIGIDO)
+local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
 boxJJ.BackgroundColor3 = TEMA.Fundo
@@ -338,7 +312,7 @@ inputFim.TextSize = 9
 inputFim.Parent = boxJJ
 
 local contando, token = false, 0
-criarBotao(abaJJ, "Iniciar JJ's", "5s por msg", TEMA.Destaque, function()
+criarBotao(abaJJ, "INICIAR CONTAGEM", "5 segundos por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
     contando = true
@@ -352,11 +326,11 @@ criarBotao(abaJJ, "Iniciar JJ's", "5s por msg", TEMA.Destaque, function()
             if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated then
                 hum:ChangeState(Enum.HumanoidStateType.Jumping)
             end
-            task.wait(5) -- 5 SEGUNDOS
+            task.wait(5)
         end
     end)
 end)
-criarBotao(abaJJ, "Parar", "Para contagem", TEMA.Vermelho, function()
+criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     contando = false
     token = token + 1
 end)
@@ -368,12 +342,12 @@ function atualizarTamanho()
     if not abaAtual then return end
     local h = math.min(abaAtual.UIListLayout.AbsoluteContentSize.Y + 5, 250)
     abaAtual.CanvasSize = UDim2.new(0, 0, 0, h)
-    contentFrame.Size = UDim2.new(1, -8, 0, h)
-    panel.Size = UDim2.new(0, 180, 0, 48 + h + 5)
+    contentFrame.Size = UDim2.new(1, -10, 0, h)
+    panel.Size = UDim2.new(0, 200, 0, 64 + h + 5)
 end
 for _, a in pairs(abas) do a.list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(atualizarTamanho) end
-abas["AÇÃO"].scroll.Visible = true
-TweenService:Create(abas["AÇÃO"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Destaque, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
+abas["AÇÕES"].scroll.Visible = true
+TweenService:Create(abas["AÇÕES"].btn, TweenInfo.new(0.1), { BackgroundColor3 = TEMA.Azul, TextColor3 = Color3.fromRGB(0,0,0) }):Play()
 atualizarTamanho()
 
 local function arrastar(f, h)
@@ -395,23 +369,25 @@ arrastar(panel, header)
 arrastar(icon, icon)
 
 local open, anim = false, false
-icon.MouseButton1Click:Connect(function()
+local function togglePanel()
     if anim then return end; anim = true
     if not open then
         atualizarTamanho()
         panel.Position = UDim2.new(0, icon.Position.X.Offset + 50, 0, icon.Position.Y.Offset)
         panel.Visible = true
-        panel.Size = UDim2.new(0, 180, 0, 0)
-        TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 180, 0, 48 + contentFrame.Size.Y.Offset + 5)}):Play()
+        panel.Size = UDim2.new(0, 200, 0, 0)
+        TweenService:Create(panel, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 200, 0, 64 + contentFrame.Size.Y.Offset + 5)}):Play()
         open = true
     else
-        local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 180, 0, 0)})
+        local t = TweenService:Create(panel, TweenInfo.new(0.15), {Size = UDim2.new(0, 200, 0, 0)})
         t:Play(); t.Completed:Connect(function() panel.Visible = false end)
         open = false
     end
     task.wait(0.25); anim = false
-end)
-closeBtn.MouseButton1Click:Connect(function() if open then icon.MouseButton1Click:Fire() end end)
+end
+
+icon.MouseButton1Click:Connect(togglePanel)
+closeBtn.MouseButton1Click:Connect(togglePanel)
 
 local seg, tempo = false, 0
 icon.MouseButton1Down:Connect(function() seg = true; tempo = tick() end)
