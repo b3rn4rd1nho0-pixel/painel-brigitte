@@ -125,24 +125,20 @@ closeBtn.TextSize = 10
 closeBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
---// MENU DE ABAS (Agora com rolagem horizontal arrastável)
-local tabsBar = Instance.new("ScrollingFrame", panel)
-tabsBar.Size = UDim2.new(1, -10, 0, 32)
+--// MENU DE ABAS (Fixas, sem precisar rolar)
+local tabsBar = Instance.new("Frame", panel)
+tabsBar.Size = UDim2.new(1, -10, 0, 26)
 tabsBar.Position = UDim2.new(0, 5, 0, 36)
 tabsBar.BackgroundTransparency = 1
-tabsBar.BorderSizePixel = 0
-tabsBar.ScrollBarThickness = 2
-tabsBar.ScrollBarImageColor3 = TEMA.Verde
-tabsBar.ScrollingDirection = Enum.ScrollingDirection.X -- Rola pro lado!
-tabsBar.ElasticBehavior = Enum.ElasticBehavior.Never
 
 local tabsLayout = Instance.new("UIListLayout", tabsBar)
 tabsLayout.FillDirection = Enum.FillDirection.Horizontal
-tabsLayout.Padding = UDim.new(0, 4)
+tabsLayout.Padding = UDim.new(0, 3)
+tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Centraliza as abas
 
 local contentFrame = Instance.new("Frame", panel)
 contentFrame.Size = UDim2.new(1, -10, 0, 0)
-contentFrame.Position = UDim2.new(0, 5, 0, 74)
+contentFrame.Position = UDim2.new(0, 5, 0, 66)
 contentFrame.BackgroundTransparency = 1
 
 --// CHAT
@@ -158,11 +154,11 @@ end
 local abas = {}
 local function criarAba(nome, ordem)
     local btn = Instance.new("TextButton", tabsBar)
-    btn.Size = UDim2.new(0, 70, 1, 0)
+    btn.Size = UDim2.new(0, 49, 1, 0) -- Tamanho reduzido pra caber os 4 na tela
     btn.BackgroundColor3 = TEMA.Card
     btn.Text = nome
     btn.TextColor3 = TEMA.TextoSub
-    btn.TextSize = 9
+    btn.TextSize = 8 -- Fonte menor
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = ordem
@@ -390,7 +386,7 @@ function atualizarTamanho()
     abaAtual.CanvasSize = UDim2.new(0, 0, 0, h)
     local alturaVisivel = math.min(h, 260)
     contentFrame.Size = UDim2.new(1, -10, 0, alturaVisivel)
-    panel.Size = UDim2.new(0, 220, 0, 74 + alturaVisivel + 5)
+    panel.Size = UDim2.new(0, 220, 0, 66 + alturaVisivel + 5)
 end
 
 for _, a in pairs(abas) do a.list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(atualizarTamanho) end
