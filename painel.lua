@@ -322,7 +322,7 @@ for i, q in ipairs(qcodes) do
     end)
 end
 
---// ABA 4 — JJ's (1.0s, Pulo Corrigido)
+--// ABA 4 — JJ's (1.2s, Pulo Forçado)
 local abaJJ = criarAba("JJ's", 4)
 local boxJJ = Instance.new("Frame", abaJJ)
 boxJJ.Size = UDim2.new(1, 0, 0, 22)
@@ -348,7 +348,7 @@ inputFim.TextSize = 9
 inputFim.Parent = boxJJ
 
 local contando, token = false, 0
-criarBotao(abaJJ, "INICIAR", "1.0s por msg", TEMA.Verde, function()
+criarBotao(abaJJ, "INICIAR", "1.2s por msg", TEMA.Verde, function()
     local n1, n2 = tonumber(inputIni.Text), tonumber(inputFim.Text)
     if not n1 or not n2 or n1 > n2 then return end
     contando = true
@@ -360,22 +360,18 @@ criarBotao(abaJJ, "INICIAR", "1.0s por msg", TEMA.Verde, function()
             
             enviarChat(numExt(i) .. "!")
             
-            -- Pulo Corrigido (Força o pulo e previne super pulo)
+            -- FORÇAR PULO
             local char = player.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hum and hum:GetState() ~= Enum.HumanoidStateType.Seated and hum:GetState() ~= Enum.HumanoidStateType.Dead then
-                hum.Jump = true
-                -- Pequeno delay para o Roblox processar o pulo antes de mandar o próximo
-                task.wait(0.15) 
-                if hum:GetState() == Enum.HumanoidStateType.Landed or hum:GetState() == Enum.HumanoidStateType.Running then
-                    hum.Jump = true
-                end
+            if hum and hum.Health > 0 then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
             end
             
-            task.wait(1.0) -- 1 Segundo
+            task.wait(1.2) -- 1.2 segundos
         end
     end)
 end)
+
 criarBotao(abaJJ, "PARAR", "Para contagem", TEMA.Vermelho, function()
     contando = false
     token = token + 1
